@@ -29,7 +29,7 @@ run = True
 
 
 while run:
-    pygame.time.delay(100)
+    pygame.time.delay(60)
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -39,13 +39,17 @@ while run:
     keys = pygame.key.get_pressed()
     
     if keys[pygame.K_LEFT]:
-        plrX -= plrVel
+        if plrX != 0:
+            plrX -= plrVel
     if keys[pygame.K_RIGHT]:
-        plrX += plrVel
+        if plrX != 500 - plrWidth:
+            plrX += plrVel
     if keys[pygame.K_UP]:
-        plrY -= plrVel
+        if plrY != 0:
+            plrY -= plrVel
     if keys[pygame.K_DOWN]:
-        plrY += plrVel
+        if plrY != 500 - plrHeight:
+            plrY += plrVel
 
     WIN.fill((0, 0, 0))
     pygame.draw.rect(WIN, (255, 0, 0), (plrX, plrY, plrWidth, plrHeight))
