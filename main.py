@@ -51,7 +51,7 @@ while run:
         if plrY != 500 - plrHeight:
             plrY += plrVel
 
-    WIN.fill((0, 0, 0))
+    WIN.fill((0, 255, 150))
     pygame.draw.rect(WIN, (255, 0, 0), (plrX, plrY, plrWidth, plrHeight))
     pygame.display.update()
 
