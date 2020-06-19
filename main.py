@@ -19,8 +19,8 @@ pygame.display.set_caption("First Game")
 
 #VARIABLES
 
-plrX = 50
-plrY = 50
+plrX = 225
+plrY = 225
 plrWidth = 40
 plrHeight = 40
 plrVel = 5
@@ -38,18 +38,14 @@ while run:
     
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_LEFT]:
-        if plrX != 0:
-            plrX -= plrVel
-    if keys[pygame.K_RIGHT]:
-        if plrX != 500 - plrWidth:
-            plrX += plrVel
-    if keys[pygame.K_UP]:
-        if plrY != 0:
-            plrY -= plrVel
-    if keys[pygame.K_DOWN]:
-        if plrY != 500 - plrHeight:
-            plrY += plrVel
+    if keys[pygame.K_LEFT] and plrX != 0:
+        plrX -= plrVel
+    if keys[pygame.K_RIGHT] and plrX != WIDTH - plrWidth:
+        plrX += plrVel
+    if keys[pygame.K_UP] and plrY != 0:
+        plrY -= plrVel
+    if keys[pygame.K_DOWN] and plrY != HEIGHT - plrHeight:
+        plrY += plrVel
 
     WIN.fill((0, 255, 150))
     pygame.draw.rect(WIN, (255, 0, 0), (plrX, plrY, plrWidth, plrHeight))
