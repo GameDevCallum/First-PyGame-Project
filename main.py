@@ -13,10 +13,10 @@ pygame.init()
 
 # WIN SETUP
 
-HEIGHT = 500
+HEIGHT = 480
 WIDTH = 500
 
-WIN = pygame.display.set_mode((HEIGHT, WIDTH))
+WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("First Game")
 
 #LOADING ASSETS
@@ -28,10 +28,12 @@ char = pygame.image.load(os.path.join("Media", "standing.png"))
 
 #VARIABLES
 
-plrX = 0
-plrY = 460
-plrWidth = 40
-plrHeight = 40
+clock = pygame.time.Clock()
+
+plrX = 50
+plrY = 400
+plrWidth = 64
+plrHeight = 64
 plrVel = 5
 isJump = False
 jumpCount = 8
@@ -39,11 +41,28 @@ left = False
 right = True
 walkCount = 0
 
+def reDrawGameWindow():
+    global walkCount
+    WIN.blit(bg, (0, 0))
+
+    if walkCount + 1 >= 27:
+        walkCount = 0
+    
+    if left:
+        WIN.blit(walkLeft[walkCount//3], (plrX, plrY))
+        walkCount += 1
+    elif right:
+        WIN.blit(walkRight[walkCount//3], (plrX, plrY))
+        walkCount += 1
+    else:
+        WIN.blit(char, (plrX, plrY))
+    
+    pygame.display.update()
+
 run = True
 
-
 while run:
-    pygame.time.delay(60)
+    clock.tick(27)
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -52,13 +71,26 @@ while run:
     
     keys = pygame.key.get_pressed()
     
-    if keys[pygame.K_a] and plrX != 0:
+    if keys[pygame.K_a] and plrX > plrVel:
         plrX -= plrVel
-    if keys[pygame.K_d] and plrX != WIDTH - plrWidth:
+        left = True
+        right = False
+
+    elif keys[pygame.K_d] and plrX < WIDTH - plrWidth - plrVel:
         plrX += plrVel
+        right = True
+        left = False
+    else:
+        right = False
+        left = False
+        walkCount = 0
+
     if not(isJump):
         if keys[pygame.K_w]:
             isJump = True
+            right = False
+            left = False
+            walkCount = 0
     else:
         if jumpCount >= -8:
             neg = 1
@@ -70,11 +102,8 @@ while run:
         else:
             isJump = False
             jumpCount = 8
-
-
-    WIN.fill((0, 255, 150))
-    pygame.draw.rect(WIN, (255, 0, 0), (plrX, plrY, plrWidth, plrHeight))
-    pygame.display.update()
+    
+    reDrawGameWindow()
 
 
 pygame.quit()
