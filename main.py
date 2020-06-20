@@ -29,6 +29,7 @@ char = pygame.image.load(os.path.join("Media", "standing.png"))
 #VARIABLES
 
 clock = pygame.time.Clock()
+kills = 0
 
 class player(object):
     def __init__(self, plrX, plrY, plrWidth, plrHeight):
@@ -43,6 +44,7 @@ class player(object):
         self.right = False
         self.walkCount = 0
         self.standing = True
+        self.hitbox = (self.plrX + 17, self.plrY + 11, 29, 52)
 
     def draw(self, WIN):
         if self.walkCount + 1 >= 27:
@@ -60,6 +62,10 @@ class player(object):
                 WIN.blit(walkRight[0], (self.plrX, self.plrY))
             else:
                 WIN.blit(walkLeft[0], (self.plrX, self.plrY))
+        
+        self.hitbox = (self.plrX + 17, self.plrY + 11, 29, 52)
+        pygame.draw.rect(WIN, (255, 0, 0), self.hitbox, 2)
+
 
 class projectile(object):
     def __init__(self, x, y, radius, color, facing):
@@ -86,6 +92,8 @@ class enemy(object):
         self.path = [self.x, self.end]
         self.walkCount = 0
         self.vel = 3
+        self.health = 5
+        self.hitbox = (self.x + 17, self.y + 2, 31, 57)
         
     def draw(self, WIN):
         self.move()
@@ -98,6 +106,9 @@ class enemy(object):
         else:
             WIN.blit(self.walkLeft[self.walkCount //3], (self.x, self.y))
             self.walkCount += 1
+            
+        self.hitbox = (self.x + 17, self.y + 2, 31, 57)
+        pygame.draw.rect(WIN, (255, 0, 0), self.hitbox, 2)
 
     def move(self):
         if self.vel > 0:
@@ -113,6 +124,13 @@ class enemy(object):
                 self.vel = self.vel * -1
                 self.walkCount = 0
 
+    def hit(self):
+        global kills
+        self.health -= 1
+        if self.health < 0:
+            print("Killed")
+            kills += 1
+
 def reDrawGameWindow():
     WIN.blit(bg, (0, 0))
     character.draw(WIN)
@@ -124,15 +142,26 @@ def reDrawGameWindow():
 character = player(200, 410, 64, 64)
 goblin = enemy(100, 410, 64, 64, 450)
 
-
+shootLoop = 0
 bullets = []
 
 run = True
+
+def isInHitBoxY(bullet):
+     return bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]
+
+def isInHitBoxX(bullet):
+    return bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]
 
 """ MAIN LOOP """
 
 while run:
     clock.tick(27)
+
+    if shootLoop > 0:
+        shootLoop += 1
+    if shootLoop > 3:
+        shootLoop = 0
     
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -140,6 +169,11 @@ while run:
             break
 
     for bullet in bullets:
+        if isInHitBoxY(bullet):
+            if isInHitBoxX(bullet):
+                goblin.hit()
+                bullets.pop(bullets.index(bullet))
+
         if bullet.x < 500 and bullet.x > 0:
             bullet.x += bullet.vel
         else:
@@ -147,14 +181,17 @@ while run:
     
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_SPACE] and shootLoop == 0:
         if character.left:
             facing = -1
         else:
             facing = 1
         if len(bullets) < 5:
             bullets.append(projectile(round(character.plrX + character.plrWidth //2), round(character.plrY + character.plrHeight//2), 6, (0, 0, 0), facing))
-    
+
+        shootLoop = 1
+
+
     if keys[pygame.K_a] and character.plrX > character.plrVel:
         character.plrX -= character.plrVel
         character.left = True
