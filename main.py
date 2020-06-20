@@ -138,7 +138,7 @@ while run:
             neg = 1
             if character.jumpCount < 0:
                 neg = -1
-            character.plrY -= (character.jumpCount ** 2) / 1 * neg
+            character.plrY -= int((character.jumpCount ** 2) / 1 * neg)
             character.jumpCount -= 1
 
         else:
