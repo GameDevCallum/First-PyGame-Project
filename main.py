@@ -73,14 +73,57 @@ class projectile(object):
     def draw(self, WIN):
         pygame.draw.circle(WIN, self.color, (self.x, self.y), self.radius)
 
+class enemy(object):
+    walkRight = [pygame.image.load(os.path.join("Media", "R1E.png")), pygame.image.load(os.path.join("Media", "R2E.png")), pygame.image.load(os.path.join("Media", "R3E.png")), pygame.image.load(os.path.join("Media", "R4E.png")), pygame.image.load(os.path.join("Media", "R5E.png")), pygame.image.load(os.path.join("Media", "R6E.png")), pygame.image.load(os.path.join("Media", "R7E.png")), pygame.image.load(os.path.join("Media", "R8E.png")), pygame.image.load(os.path.join("Media", "R9E.png")), pygame.image.load(os.path.join("Media", "R10E.png")), pygame.image.load(os.path.join("Media", "R11E.png")) ]
+    walkLeft = [pygame.image.load(os.path.join("Media", "L1E.png")), pygame.image.load(os.path.join("Media", "L2E.png")), pygame.image.load(os.path.join("Media", "L3E.png")), pygame.image.load(os.path.join("Media", "L4E.png")), pygame.image.load(os.path.join("Media", "L5E.png")), pygame.image.load(os.path.join("Media", "L6E.png")), pygame.image.load(os.path.join("Media", "L7E.png")), pygame.image.load(os.path.join("Media", "L8E.png")), pygame.image.load(os.path.join("Media", "L9E.png")), pygame.image.load(os.path.join("Media", "L10E.png")), pygame.image.load(os.path.join("Media", "L11E.png")) ]
+
+    def __init__(self, x, y, width, height, end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [self.x, self.end]
+        self.walkCount = 0
+        self.vel = 3
+        
+    def draw(self, WIN):
+        self.move()
+        if self.walkCount + 1 >= 33:
+            self.walkCount = 0
+
+        if self.vel > 0:
+            WIN.blit(self.walkRight[self.walkCount //3], (self.x, self.y))
+            self.walkCount += 1
+        else:
+            WIN.blit(self.walkLeft[self.walkCount //3], (self.x, self.y))
+            self.walkCount += 1
+
+    def move(self):
+        if self.vel > 0:
+            if self.x + self.vel < self.path[1]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        else:
+            if self.x - self.vel > self.path[0]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+
 def reDrawGameWindow():
     WIN.blit(bg, (0, 0))
     character.draw(WIN)
+    goblin.draw(WIN)
     for bullet in bullets:
         bullet.draw(WIN)
     pygame.display.update()
 
-character = player(300, 410, 64, 64)
+character = player(200, 410, 64, 64)
+goblin = enemy(100, 410, 64, 64, 450)
+
 
 bullets = []
 
