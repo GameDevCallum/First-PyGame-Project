@@ -130,6 +130,7 @@ class enemy(object):
         if self.health < 0:
             print("Killed")
             kills += 1
+            self.health = 5
 
 def reDrawGameWindow():
     WIN.blit(bg, (0, 0))
